@@ -9,25 +9,25 @@
 /* Begin PBXBuildFile section */
 		73E60458210EA3EF002E52CB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E60457210EA3EF002E52CB /* AppDelegate.swift */; };
 		73E6045A210EA3EF002E52CB /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 73E60459210EA3EF002E52CB /* GameScene.sks */; };
-		73E6045C210EA3EF002E52CB /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 73E6045B210EA3EF002E52CB /* Actions.sks */; };
 		73E6045E210EA3EF002E52CB /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E6045D210EA3EF002E52CB /* GameScene.swift */; };
 		73E60460210EA3EF002E52CB /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E6045F210EA3EF002E52CB /* GameViewController.swift */; };
 		73E60463210EA3EF002E52CB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 73E60461210EA3EF002E52CB /* Main.storyboard */; };
 		73E60465210EA3F0002E52CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 73E60464210EA3F0002E52CB /* Assets.xcassets */; };
 		73E60468210EA3F0002E52CB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 73E60466210EA3F0002E52CB /* LaunchScreen.storyboard */; };
+		73E60470210EAB9E002E52CB /* dino.assets in Resources */ = {isa = PBXBuildFile; fileRef = 73E6046F210EAB9E002E52CB /* dino.assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		73E60454210EA3EF002E52CB /* DinoRunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DinoRunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		73E60457210EA3EF002E52CB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		73E60459210EA3EF002E52CB /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		73E6045B210EA3EF002E52CB /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		73E6045D210EA3EF002E52CB /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		73E6045F210EA3EF002E52CB /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		73E60462210EA3EF002E52CB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		73E60464210EA3F0002E52CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		73E60467210EA3F0002E52CB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		73E60469210EA3F0002E52CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		73E6046F210EAB9E002E52CB /* dino.assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dino.assets; path = ../../dino.assets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,11 +62,11 @@
 			children = (
 				73E60457210EA3EF002E52CB /* AppDelegate.swift */,
 				73E60459210EA3EF002E52CB /* GameScene.sks */,
-				73E6045B210EA3EF002E52CB /* Actions.sks */,
 				73E6045D210EA3EF002E52CB /* GameScene.swift */,
 				73E6045F210EA3EF002E52CB /* GameViewController.swift */,
 				73E60461210EA3EF002E52CB /* Main.storyboard */,
 				73E60464210EA3F0002E52CB /* Assets.xcassets */,
+				73E6046F210EAB9E002E52CB /* dino.assets */,
 				73E60466210EA3F0002E52CB /* LaunchScreen.storyboard */,
 				73E60469210EA3F0002E52CB /* Info.plist */,
 			);
@@ -133,9 +133,9 @@
 			files = (
 				73E60463210EA3EF002E52CB /* Main.storyboard in Resources */,
 				73E6045A210EA3EF002E52CB /* GameScene.sks in Resources */,
+				73E60470210EAB9E002E52CB /* dino.assets in Resources */,
 				73E60465210EA3F0002E52CB /* Assets.xcassets in Resources */,
 				73E60468210EA3F0002E52CB /* LaunchScreen.storyboard in Resources */,
-				73E6045C210EA3EF002E52CB /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
