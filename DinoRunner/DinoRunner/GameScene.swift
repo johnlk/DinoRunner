@@ -11,30 +11,48 @@ import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    var ground: SKNode!
+    var groundNode: SKNode!
+    var groundLoop: SKAction!
     
-    override func didMove(to view: SKView) {
-        
-        view.backgroundColor = .grey
-        
+    func createGround() {
         let screenWidth = self.frame.size.width
         
+        //ground texture
         let groundTexture = SKTexture(imageNamed: "dino.assets/landscape/ground")
         groundTexture.filteringMode = .nearest
         
-        let moveGroundLeft = SKAction.moveBy(x: -screenWidth, y: 0, duration: TimeInterval(screenWidth / 100))
-        let resetGround = SKAction.moveBy(x: screenWidth, y: 0, duration: 0.0)
-        let runGround = SKAction.repeatForever(SKAction.sequence([moveGroundLeft, resetGround]))
+        //ground actions
+        let moveGroundLeft = SKAction.moveBy(x: -groundTexture.size().width, y: 0.0, duration: TimeInterval(screenWidth / 100))
+        let resetGround = SKAction.moveBy(x: groundTexture.size().width, y: 0.0, duration: 0.0)
+        groundLoop = SKAction.sequence([moveGroundLeft, resetGround])
         
-        let groundSprite = SKSpriteNode(texture: groundTexture)
-        groundSprite.anchorPoint = CGPoint(x: 0, y: 0)
-        groundSprite.size = CGSize(width: screenWidth, height: groundTexture.size().height / 2)
-        groundSprite.setScale(2.0)
-        groundSprite.position = CGPoint(x: 0, y: groundTexture.size().height)
+        //ground nodes
+        let numberOfGroundNodes = 1 + Int(ceil(screenWidth / groundTexture.size().width))
+        let homeButtonPadding = 50.0 as CGFloat
+        for i in 0 ..< numberOfGroundNodes {
+            let node = SKSpriteNode(texture: groundTexture)
+            node.anchorPoint = CGPoint(x: 0.0, y: 0.0)
+            node.position = CGPoint(x: CGFloat(i) * groundTexture.size().width, y: groundTexture.size().height + homeButtonPadding)
+            groundNode.addChild(node)
+        }
+    }
+    
+    func animateGround() {
+        let repeatedAnimation = SKAction.repeatForever(groundLoop)
+        groundNode.run(repeatedAnimation)
+    }
+    
+    override func didMove(to view: SKView) {
         
-        groundSprite.run(runGround)
+        view.backgroundColor = .gray
         
-        self.addChild(groundSprite)
+        //ground
+        groundNode = SKNode()
+        self.addChild(groundNode)
+        createGround()
+        animateGround()
+        
+        
     }
     
     
