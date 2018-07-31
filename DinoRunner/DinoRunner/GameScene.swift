@@ -14,6 +14,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var groundNode: SKNode!
     var groundLoop: SKAction!
     
+    var backgroundNode: SKNode!
+    
     func createGround() {
         let screenWidth = self.frame.size.width
         
@@ -22,7 +24,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         groundTexture.filteringMode = .nearest
         
         //ground actions
-        let moveGroundLeft = SKAction.moveBy(x: -groundTexture.size().width, y: 0.0, duration: TimeInterval(screenWidth / 100))
+        let groundSpeed = 1.0 / 150 as CGFloat
+        let moveGroundLeft = SKAction.moveBy(x: -groundTexture.size().width, y: 0.0, duration: TimeInterval(screenWidth * groundSpeed))
         let resetGround = SKAction.moveBy(x: groundTexture.size().width, y: 0.0, duration: 0.0)
         groundLoop = SKAction.sequence([moveGroundLeft, resetGround])
         
@@ -42,6 +45,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         groundNode.run(repeatedAnimation)
     }
     
+    func createAndRunBackground() {
+        let screenWidth = self.frame.size.width
+        let screenHeight = self.frame.size.height
+        
+        //textures
+        let cloudTexture = SKTexture(imageNamed: "dino.assets/landscape/cloud")
+        let moonTexture = SKTexture(imageNamed: "dino.assets/landscape/moon")
+        cloudTexture.filteringMode = .nearest
+        moonTexture.filteringMode = .nearest
+        
+        //actions
+        let cloudSpeed = 1.0 / 50 as CGFloat
+        let moonSpeed = 1.0 / 5 as CGFloat
+        let moveCloud = SKAction.moveBy(x: -screenWidth - 50, y: 0.0, duration: TimeInterval(screenWidth * cloudSpeed))
+        let moveMoon = SKAction.moveBy(x: -screenWidth - 50, y: 0.0, duration: TimeInterval(screenWidth * moonSpeed))
+        let resetObject = SKAction.moveBy(x: screenWidth + 50, y: 0.0, duration: 0.0)
+        let cloudLoop = SKAction.sequence([moveCloud, resetObject])
+        let moonLoop = SKAction.sequence([moveMoon, resetObject])
+        
+        //sprites
+        let cloudSprite = SKSpriteNode(texture: cloudTexture)
+        cloudSprite.position = CGPoint(x: screenWidth + 25, y: screenHeight - 250)
+        let moonSprite = SKSpriteNode(texture: moonTexture)
+        moonSprite.position = CGPoint(x: screenWidth - 50, y: screenHeight - 150)
+        
+        backgroundNode.addChild(cloudSprite)
+        backgroundNode.addChild(moonSprite)
+        
+        cloudSprite.run(SKAction.repeatForever(cloudLoop))
+        moonSprite.run(SKAction.repeatForever(moonLoop))
+    }
+    
     override func didMove(to view: SKView) {
         
         view.backgroundColor = .gray
@@ -52,6 +87,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createGround()
         animateGround()
         
+        //background
+        backgroundNode = SKNode()
+        self.addChild(backgroundNode)
+        createAndRunBackground()
         
     }
     
