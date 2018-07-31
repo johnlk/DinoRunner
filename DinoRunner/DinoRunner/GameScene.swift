@@ -15,6 +15,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
+        view.backgroundColor = .grey
+        
         let screenWidth = self.frame.size.width
         
         let groundTexture = SKTexture(imageNamed: "dino.assets/landscape/ground")
@@ -31,15 +33,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         groundSprite.position = CGPoint(x: 0, y: groundTexture.size().height)
         
         groundSprite.run(runGround)
-       
-        
-        
-//        let ground = SKNode()
-//        ground.position = CGPoint(x: 0, y: 0)
-//        ground.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: groundTexture.size().height * 2.0))
-//        ground.physicsBody?.isDynamic = false
-        
-//        ground.addChild(groundSprite)
         
         self.addChild(groundSprite)
     }
