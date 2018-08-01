@@ -16,6 +16,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var backgroundNode: SKNode!
     
     var dinosaurNode: SKNode!
+    var dinoSprite: SKSpriteNode!
     
     var groundHeight: CGFloat?
     
@@ -52,6 +53,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let groundContactNode = SKNode()
         groundContactNode.position = CGPoint(x: 0, y: groundHeight! - 40)
         groundContactNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: groundHeight!))
+        groundContactNode.physicsBody?.friction = 0.0
         groundContactNode.physicsBody?.isDynamic = false
         groundContactNode.physicsBody?.categoryBitMask = groundCategory
         
@@ -116,18 +118,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let runningAnimation = SKAction.animate(with: [dinoTexture1, dinoTexture2], timePerFrame: 0.2)
         
-        let dinoSprite = SKSpriteNode()
+        dinoSprite = SKSpriteNode()
         dinoSprite.size = dinoTexture1.size()
         dinosaurNode.addChild(dinoSprite)
         
         dinoSprite.physicsBody = SKPhysicsBody(rectangleOf: dinoTexture1.size())
         dinoSprite.physicsBody?.isDynamic = true
+        dinoSprite.physicsBody?.mass = 1.0
         dinoSprite.physicsBody?.categoryBitMask = dinoCategory
         dinoSprite.physicsBody?.contactTestBitMask = groundCategory
         dinoSprite.physicsBody?.collisionBitMask = groundCategory
         
         if let dinoY = groundHeight {
-            dinoSprite.position = CGPoint(x: screenWidth * 0.15, y: dinoY + dinoTexture1.size().height)
+            dinoSprite.position = CGPoint(x: screenWidth * 0.15, y: dinoY + dinoTexture1.size().height + 500)
             dinoSprite.run(SKAction.repeatForever(runningAnimation))
         } else {
             print("Ground size wasn't previously calculated")
@@ -136,11 +139,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    func sendCacti() {
+        
+    }
+    
     override func didMove(to view: SKView) {
         
         self.backgroundColor = .white
         
         self.physicsWorld.contactDelegate = self
+        self.physicsWorld.gravity = CGVector(dx: 0.0, dy: -9.8)
         
         //ground
         groundNode = SKNode()
@@ -157,19 +165,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(dinosaurNode)
         createDinosaur()
         
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint) {
-        
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
+        //cacti
+        sendCacti()
         
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        for _ in touches {
+            dinoSprite.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 500))
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
