@@ -33,11 +33,11 @@ class GameViewController: UIViewController {
     }
 
     override var shouldAutorotate: Bool {
-        return false
+        return true
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .landscapeLeft
+        return .landscapeRight
     }
 
     override func didReceiveMemoryWarning() {
