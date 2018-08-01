@@ -12,13 +12,15 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var groundNode: SKNode!
-    var groundLoop: SKAction!
     
     var backgroundNode: SKNode!
     
     var dinosaurNode: SKNode!
     
     var groundHeight: CGFloat?
+    
+    let groundCategory = 0b0001 as UInt32
+    let dinoCategory = 0b0010 as UInt32
     
     func createGround() {
         let screenWidth = self.frame.size.width
@@ -34,7 +36,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let groundSpeed = 1.0 / 150 as CGFloat
         let moveGroundLeft = SKAction.moveBy(x: -groundTexture.size().width, y: 0.0, duration: TimeInterval(screenWidth * groundSpeed))
         let resetGround = SKAction.moveBy(x: groundTexture.size().width, y: 0.0, duration: 0.0)
-        groundLoop = SKAction.sequence([moveGroundLeft, resetGround])
+        let groundLoop = SKAction.sequence([moveGroundLeft, resetGround])
         
         //ground nodes
         let numberOfGroundNodes = 1 + Int(ceil(screenWidth / groundTexture.size().width))
@@ -44,12 +46,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             node.anchorPoint = CGPoint(x: 0.0, y: 0.0)
             node.position = CGPoint(x: CGFloat(i) * groundTexture.size().width, y: groundHeight!)
             groundNode.addChild(node)
+            node.run(SKAction.repeatForever(groundLoop))
         }
-    }
-    
-    func animateGround() {
-        let repeatedAnimation = SKAction.repeatForever(groundLoop)
-        groundNode.run(repeatedAnimation)
+        
+        let groundContactNode = SKNode()
+        groundContactNode.position = CGPoint(x: 0, y: groundHeight! - 40)
+        groundContactNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: groundHeight!))
+        groundContactNode.physicsBody?.isDynamic = false
+        groundContactNode.physicsBody?.categoryBitMask = groundCategory
+        
+        groundNode.addChild(groundContactNode)
     }
     
     func createAndRunBackground() {
@@ -108,14 +114,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         dinoTexture2.filteringMode = .nearest
         deadDinoTexture.filteringMode = .nearest
         
-        let runningAnimation = SKAction.animate(with: [dinoTexture1, dinoTexture2], timePerFrame: 0.5 / 2)
+        let runningAnimation = SKAction.animate(with: [dinoTexture1, dinoTexture2], timePerFrame: 0.2)
         
         let dinoSprite = SKSpriteNode()
         dinoSprite.size = dinoTexture1.size()
         dinosaurNode.addChild(dinoSprite)
         
+        dinoSprite.physicsBody = SKPhysicsBody(rectangleOf: dinoTexture1.size())
+        dinoSprite.physicsBody?.isDynamic = true
+        dinoSprite.physicsBody?.categoryBitMask = dinoCategory
+        dinoSprite.physicsBody?.contactTestBitMask = groundCategory
+        dinoSprite.physicsBody?.collisionBitMask = groundCategory
+        
         if let dinoY = groundHeight {
-            dinoSprite.position = CGPoint(x: screenWidth * 0.15, y: dinoY + dinoTexture1.size().height - 20)
+            dinoSprite.position = CGPoint(x: screenWidth * 0.15, y: dinoY + dinoTexture1.size().height)
             dinoSprite.run(SKAction.repeatForever(runningAnimation))
         } else {
             print("Ground size wasn't previously calculated")
@@ -126,13 +138,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
-        view.backgroundColor = .red
+        self.backgroundColor = .white
+        
+        self.physicsWorld.contactDelegate = self
         
         //ground
         groundNode = SKNode()
         self.addChild(groundNode)
         createGround()
-        animateGround()
         
         //background elements
         backgroundNode = SKNode()
