@@ -12,6 +12,7 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //nodes
+    var gameNode: SKNode!
     var groundNode: SKNode!
     var backgroundNode: SKNode!
     var cactusNode: SKNode!
@@ -29,12 +30,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let groundSpeed = 500 as CGFloat
     let cloudSpeed = 50 as CGFloat
     let moonSpeed = 10 as CGFloat
+    let background = 0 as CGFloat
+    let foreground = 1 as CGFloat
     
     //collision categories
-    let groundCategory = 1 << 1 as UInt32
-    let dinoCategory = 1 << 2 as UInt32
-    let cactusCategory = 1 << 3 as UInt32
-    let birdCategory = 1 << 4 as UInt32
+    let groundCategory = 1 << 0 as UInt32
+    let dinoCategory = 1 << 1 as UInt32
+    let cactusCategory = 1 << 2 as UInt32
+    let birdCategory = 1 << 3 as UInt32
     
     override func didMove(to view: SKView) {
         
@@ -45,25 +48,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //ground
         groundNode = SKNode()
+        groundNode.zPosition = background
         createAndMoveGround()
         addCollisionToGround()
-        self.addChild(groundNode)
         
         //background elements
         backgroundNode = SKNode()
+        backgroundNode.zPosition = background
         createMoon()
         createClouds()
-        self.addChild(backgroundNode)
         
         //dinosaur
         dinosaurNode = SKNode()
+        dinosaurNode.zPosition = foreground
         createDinosaur()
-        self.addChild(dinosaurNode)
         
         //cacti
         cactusNode = SKNode()
+        cactusNode.zPosition = foreground
         spawnCactus()
-        self.addChild(cactusNode)
+        
+        //parent game node
+        gameNode = SKNode()
+        gameNode.addChild(groundNode)
+        gameNode.addChild(backgroundNode)
+        gameNode.addChild(dinosaurNode)
+        gameNode.addChild(cactusNode)
+        self.addChild(gameNode)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -78,6 +89,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        if(hitCactus(contact) || hitBird(contact)){
+            gameOver()
+        }
+    }
+    
+    func hitCactus(_ contact: SKPhysicsContact) -> Bool {
+        return contact.bodyA.categoryBitMask & cactusCategory == cactusCategory ||
+            contact.bodyB.categoryBitMask & cactusCategory == cactusCategory
+    }
+    
+    func hitBird(_ contact: SKPhysicsContact) -> Bool {
+        return contact.bodyA.categoryBitMask & birdCategory == birdCategory ||
+                contact.bodyB.categoryBitMask & birdCategory == birdCategory
+    }
+    
+    func gameOver() {
+        gameNode.speed = 0.0
+        
+        let deadDinoTexture = SKTexture(imageNamed: "dino.assets/dinosaurs/dinoDead")
+        deadDinoTexture.filteringMode = .nearest
+        
+        dinoSprite.removeAllActions()
+        dinoSprite.texture = deadDinoTexture
     }
     
     func createAndMoveGround() {
@@ -199,10 +236,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //textures
         let dinoTexture1 = SKTexture(imageNamed: "dino.assets/dinosaurs/dinoRight")
         let dinoTexture2 = SKTexture(imageNamed: "dino.assets/dinosaurs/dinoLeft")
-        let deadDinoTexture = SKTexture(imageNamed: "dino.assets/dinosaurs/dinoDead")
         dinoTexture1.filteringMode = .nearest
         dinoTexture2.filteringMode = .nearest
-        deadDinoTexture.filteringMode = .nearest
         
         let runningAnimation = SKAction.animate(with: [dinoTexture1, dinoTexture2], timePerFrame: 0.12)
         
@@ -218,8 +253,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         dinoSprite.physicsBody?.isDynamic = true
         dinoSprite.physicsBody?.mass = 1.0
         dinoSprite.physicsBody?.categoryBitMask = dinoCategory
-        dinoSprite.physicsBody?.contactTestBitMask = groundCategory | birdCategory
-        dinoSprite.physicsBody?.collisionBitMask = groundCategory | birdCategory
+        dinoSprite.physicsBody?.contactTestBitMask = groundCategory | birdCategory | cactusCategory
+        dinoSprite.physicsBody?.collisionBitMask = groundCategory | birdCategory | cactusCategory
         
         if let dinoY = groundHeight {
             dinoYPosition = dinoY + dinoTexture1.size().height * dinoScale
