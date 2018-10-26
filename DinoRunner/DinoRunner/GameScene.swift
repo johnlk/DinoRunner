@@ -17,6 +17,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var backgroundNode: SKNode!
     var cactusNode: SKNode!
     var dinosaurNode: SKNode!
+    var birdNode: SKNode!
     
     //sprites
     var dinoSprite: SKSpriteNode!
@@ -28,8 +29,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //consts
     let dinoHopForce = 700 as Int
     let groundSpeed = 500 as CGFloat
+    let birdSpeed = 300 as CGFloat
     let cloudSpeed = 50 as CGFloat
     let moonSpeed = 10 as CGFloat
+    
     let background = 0 as CGFloat
     let foreground = 1 as CGFloat
     
@@ -68,12 +71,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         cactusNode.zPosition = foreground
         spawnCactus()
         
+        //birds
+        birdNode = SKNode()
+        birdNode.zPosition = foreground
+        spawnBird()
+        
         //parent game node
         gameNode = SKNode()
         gameNode.addChild(groundNode)
         gameNode.addChild(backgroundNode)
         gameNode.addChild(dinosaurNode)
         gameNode.addChild(cactusNode)
+        gameNode.addChild(birdNode)
         self.addChild(gameNode)
     }
     
@@ -256,14 +265,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         dinoSprite.physicsBody?.contactTestBitMask = groundCategory | birdCategory | cactusCategory
         dinoSprite.physicsBody?.collisionBitMask = groundCategory | birdCategory | cactusCategory
         
-        if let dinoY = groundHeight {
-            dinoYPosition = dinoY + dinoTexture1.size().height * dinoScale
-            dinoSprite.position = CGPoint(x: screenWidth * 0.15, y: dinoYPosition!)
-            dinoSprite.run(SKAction.repeatForever(runningAnimation))
-        } else {
-            print("Ground size wasn't previously calculated")
-            exit(0)
-        }
+        dinoYPosition = getGroundHeight() + dinoTexture1.size().height * dinoScale
+        dinoSprite.position = CGPoint(x: screenWidth * 0.15, y: dinoYPosition!)
+        dinoSprite.run(SKAction.repeatForever(runningAnimation))
     }
     
     func spawnCactus() {
@@ -303,9 +307,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //actions
         let moveCactus = SKAction.moveBy(x: -distanceToMove, y: 0.0, duration: TimeInterval(screenWidth / groundSpeed))
         
+        
+        sprite.position = CGPoint(x: distanceToMove, y: getGroundHeight() + texture.size().height)
+        sprite.run(moveCactus)
+    }
+    
+    func spawnBird() {
+        //textures
+        let birdTexture1 = SKTexture(imageNamed: "dino.assets/dinosaurs/flyer1")
+        let birdTexture2 = SKTexture(imageNamed: "dino.assets/dinosaurs/flyer2")
+        let birdScale = 3.0 as CGFloat
+        birdTexture1.filteringMode = .nearest
+        birdTexture2.filteringMode = .nearest
+        
+        //animation
+        let screenWidth = self.frame.size.width
+        let distanceOffscreen = 50.0 as CGFloat
+        let distanceToMove = screenWidth + distanceOffscreen + birdTexture1.size().width * birdScale
+        
+        let flapAnimation = SKAction.animate(with: [birdTexture1, birdTexture2], timePerFrame: 0.5)
+        let moveBird = SKAction.moveBy(x: -distanceToMove, y: 0.0, duration: TimeInterval(screenWidth / birdSpeed))
+        
+        //sprite
+        let birdSprite = SKSpriteNode()
+        birdSprite.size = birdTexture1.size()
+        birdSprite.setScale(birdScale)
+        
+        birdSprite.position = CGPoint(x: distanceToMove,
+                                      y: getGroundHeight() + birdTexture1.size().height * birdScale + 150)
+        birdSprite.run(SKAction.group([moveBird, SKAction.repeatForever(flapAnimation)]))
+        
+        //add to scene
+        birdNode.addChild(birdSprite)
+    }
+    
+    func getGroundHeight() -> CGFloat {
         if let gHeight = groundHeight {
-            sprite.position = CGPoint(x: distanceToMove, y: gHeight + texture.size().height)
-            sprite.run(moveCactus)
+            return gHeight
         } else {
             print("Ground size wasn't previously calculated")
             exit(0)
