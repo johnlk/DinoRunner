@@ -19,6 +19,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var dinosaurNode: SKNode!
     var birdNode: SKNode!
     
+    //score
+    var scoreNode: SKLabelNode!
+    var score = 0 as Int
+    
     //sprites
     var dinoSprite: SKSpriteNode!
     
@@ -76,6 +80,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         birdNode.zPosition = foreground
         spawnBird()
         
+        //score
+        score = 0
+        scoreNode = SKLabelNode(fontNamed: "Arial")
+        scoreNode.fontSize = 30
+        scoreNode.zPosition = foreground
+        scoreNode.text = "Score: 0"
+        scoreNode.fontColor = SKColor.gray
+        scoreNode.position = CGPoint(x: 150, y: 100)
+        
         //parent game node
         gameNode = SKNode()
         gameNode.addChild(groundNode)
@@ -83,13 +96,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         gameNode.addChild(dinosaurNode)
         gameNode.addChild(cactusNode)
         gameNode.addChild(birdNode)
+        gameNode.addChild(scoreNode)
         self.addChild(gameNode)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for _ in touches {
             if let groundPosition = dinoYPosition {
-                if dinoSprite.position.y <= groundPosition {
+                if dinoSprite.position.y <= groundPosition && gameNode.speed > 0 {
                     dinoSprite.physicsBody?.applyImpulse(CGVector(dx: 0, dy: dinoHopForce))
                 }
             }
@@ -98,6 +112,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+        if(gameNode.speed > 0){
+            score += 1
+            scoreNode.text = "Score: \(score/10)"
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -262,8 +280,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         dinoSprite.physicsBody?.isDynamic = true
         dinoSprite.physicsBody?.mass = 1.0
         dinoSprite.physicsBody?.categoryBitMask = dinoCategory
-        dinoSprite.physicsBody?.contactTestBitMask = groundCategory | birdCategory | cactusCategory
-        dinoSprite.physicsBody?.collisionBitMask = groundCategory | birdCategory | cactusCategory
+        dinoSprite.physicsBody?.contactTestBitMask = birdCategory | cactusCategory
+        dinoSprite.physicsBody?.collisionBitMask = groundCategory
         
         dinoYPosition = getGroundHeight() + dinoTexture1.size().height * dinoScale
         dinoSprite.position = CGPoint(x: screenWidth * 0.15, y: dinoYPosition!)
@@ -291,7 +309,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         cactusSprite.physicsBody?.mass = 1.0
         cactusSprite.physicsBody?.categoryBitMask = cactusCategory
         cactusSprite.physicsBody?.contactTestBitMask = dinoCategory
-        cactusSprite.physicsBody?.collisionBitMask = dinoCategory | groundCategory
+        cactusSprite.physicsBody?.collisionBitMask = groundCategory
         
         //add to scene
         cactusNode.addChild(cactusSprite)
