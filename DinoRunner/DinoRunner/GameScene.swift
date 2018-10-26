@@ -123,19 +123,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func createMoon() {
         //texture
         let moonTexture = SKTexture(imageNamed: "dino.assets/landscape/moon")
+        let moonScale = 3.0 as CGFloat
         moonTexture.filteringMode = .nearest
         
         //moon sprite
         let moonSprite = SKSpriteNode(texture: moonTexture)
-        
+        moonSprite.setScale(moonScale)
         //add to scene
         backgroundNode.addChild(moonSprite)
         
         //animate the moon
-        animateMoon(moonSprite, moonTexture)
+        animateMoon(sprite: moonSprite, textureWidth: moonTexture.size().width * moonScale)
     }
     
-    func animateMoon(_ sprite: SKSpriteNode, _ texture: SKTexture) {
+    func animateMoon(sprite: SKSpriteNode, textureWidth: CGFloat) {
         let screenWidth = self.frame.size.width
         let screenHeight = self.frame.size.height
         
@@ -143,7 +144,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let distanceBelowTop = 150 as CGFloat
         
         //moon actions
-        let moveMoon = SKAction.moveBy(x: -screenWidth - texture.size().width - distanceOffscreen,
+        let moveMoon = SKAction.moveBy(x: -screenWidth - textureWidth - distanceOffscreen,
                                        y: 0.0, duration: TimeInterval(screenWidth / moonSpeed))
         let resetMoon = SKAction.moveBy(x: screenWidth + distanceOffscreen, y: 0.0, duration: 0)
         let moonLoop = SKAction.sequence([moveMoon, resetMoon])
@@ -155,6 +156,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func createClouds() {
         //texture
         let cloudTexture = SKTexture(imageNamed: "dino.assets/landscape/cloud")
+        let cloudScale = 3.0 as CGFloat
         cloudTexture.filteringMode = .nearest
         
         //clouds
@@ -162,12 +164,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for i in 0 ..< numClouds {
             //create sprite
             let cloudSprite = SKSpriteNode(texture: cloudTexture)
-            
+            cloudSprite.setScale(cloudScale)
             //add to scene
             backgroundNode.addChild(cloudSprite)
             
             //animate the cloud
-            animateCloud(cloudSprite, cloudIndex: i, textureWidth: cloudTexture.size().width)
+            animateCloud(cloudSprite, cloudIndex: i, textureWidth: cloudTexture.size().width * cloudScale)
         }
     }
     
@@ -192,7 +194,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func createDinosaur() {
         let screenWidth = self.frame.size.width
-        let dinoScale = 3.0 as CGFloat
+        let dinoScale = 4.0 as CGFloat
         
         //textures
         let dinoTexture1 = SKTexture(imageNamed: "dino.assets/dinosaurs/dinoRight")
@@ -230,8 +232,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func spawnCactus() {
-        let cactusTextures = ["cactus1", "cactus2", "cactus3", "doubleCactus", "tripleCactus" ,"quadCactus"]
+        let cactusTextures = ["cactus1", "cactus2", "cactus3", "doubleCactus", "tripleCactus"]
         let cactusIndex = Int.random(in: 0 ..< cactusTextures.count)
+        let cactusScale = 3.0 as CGFloat
         
         //texture
         let cactusTexture = SKTexture(imageNamed: "dino.assets/cacti/" + cactusTextures[cactusIndex])
@@ -239,9 +242,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //sprite
         let cactusSprite = SKSpriteNode(texture: cactusTexture)
+        cactusSprite.setScale(cactusScale)
         
         //physics
-        cactusSprite.physicsBody = SKPhysicsBody(rectangleOf: cactusTexture.size())
+        let contactBox = CGSize(width: cactusTexture.size().width * cactusScale,
+                                height: cactusTexture.size().height * cactusScale)
+        cactusSprite.physicsBody = SKPhysicsBody(rectangleOf: contactBox)
         cactusSprite.physicsBody?.isDynamic = true
         cactusSprite.physicsBody?.mass = 1.0
         cactusSprite.physicsBody?.categoryBitMask = cactusCategory
