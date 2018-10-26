@@ -192,10 +192,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func createDinosaur() {
         let screenWidth = self.frame.size.width
+        let dinoScale = 3.0 as CGFloat
         
         //textures
-        let dinoTexture1 = SKTexture(imageNamed: "dino.assets/dinosaurs/dino1")
-        let dinoTexture2 = SKTexture(imageNamed: "dino.assets/dinosaurs/dino2")
+        let dinoTexture1 = SKTexture(imageNamed: "dino.assets/dinosaurs/dinoRight")
+        let dinoTexture2 = SKTexture(imageNamed: "dino.assets/dinosaurs/dinoLeft")
         let deadDinoTexture = SKTexture(imageNamed: "dino.assets/dinosaurs/dinoDead")
         dinoTexture1.filteringMode = .nearest
         dinoTexture2.filteringMode = .nearest
@@ -205,9 +206,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         dinoSprite = SKSpriteNode()
         dinoSprite.size = dinoTexture1.size()
+        dinoSprite.setScale(dinoScale)
         dinosaurNode.addChild(dinoSprite)
         
-        dinoSprite.physicsBody = SKPhysicsBody(rectangleOf: dinoTexture1.size())
+        let physicsBox = CGSize(width: dinoTexture1.size().width * dinoScale,
+                                height: dinoTexture1.size().height * dinoScale)
+        
+        dinoSprite.physicsBody = SKPhysicsBody(rectangleOf: physicsBox)
         dinoSprite.physicsBody?.isDynamic = true
         dinoSprite.physicsBody?.mass = 1.0
         dinoSprite.physicsBody?.categoryBitMask = dinoCategory
@@ -215,7 +220,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         dinoSprite.physicsBody?.collisionBitMask = groundCategory | birdCategory
         
         if let dinoY = groundHeight {
-            dinoYPosition = dinoY + dinoTexture1.size().height
+            dinoYPosition = dinoY + dinoTexture1.size().height * dinoScale
             dinoSprite.position = CGPoint(x: screenWidth * 0.15, y: dinoYPosition!)
             dinoSprite.run(SKAction.repeatForever(runningAnimation))
         } else {
