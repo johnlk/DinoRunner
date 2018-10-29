@@ -24,6 +24,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var resetInstructions: SKLabelNode!
     var score = 0 as Int
     
+    //sound effects
+    let jumpSound = SKAction.playSoundFileNamed("dino.assets/sounds/jump", waitForCompletion: false)
+    let dieSound = SKAction.playSoundFileNamed("dino.assets/sounds/die", waitForCompletion: false)
+    
     //sprites
     var dinoSprite: SKSpriteNode!
     
@@ -120,6 +124,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if let groundPosition = dinoYPosition {
                 if dinoSprite.position.y <= groundPosition && gameNode.speed > 0 {
                     dinoSprite.physicsBody?.applyImpulse(CGVector(dx: 0, dy: dinoHopForce))
+                    run(jumpSound)
                 }
             }
         }
@@ -148,6 +153,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func didBegin(_ contact: SKPhysicsContact) {
         if(hitCactus(contact) || hitBird(contact)){
+            run(dieSound)
             gameOver()
         }
     }
